@@ -1,5 +1,26 @@
 #include <iostream>
 using namespace std;
+/*
+Proiectul trebuie sa contina urmatoarele elemente :
+
+4 clase
+o clasa de baza
+doua clase derivate din clasa de baza
+o clasa care sa contina un vector cu elemente de tipul clasei de baza
+Fiecare clasa va contine :
+Constructori(fara parametri, cu parametri, de copiere)
+Destructori
+Supraincarcarea operatorului de atribuire
+Metode de acces pentru campurile private
+Supraincarcarea operatorilor de citire si afisare
+In plus, clasa care contine vectorul va contine :
+
+supraincarcarea operatorului += pentru a adauga un element in vector
+supraincarcarea operatorului -= pentru a elimina un element din vector
+operatorul de acces pe baza de index, pentru citirea unui element din vector de la o pozitie data
+serializare / deserializare in / din fisiere binare a vectorului
+
+*/
 
 enum Status {
 	Activ,
@@ -246,6 +267,13 @@ istream& operator>>(istream& is, genMuzical& gen)
 
 class Produs
 {
+
+protected:
+	unsigned int idProdus;
+	unsigned int stoc;
+	float pret;
+	Status statusProdus;
+
 public:
 	Produs() {
 		this->idProdus = 0;
@@ -265,15 +293,35 @@ public:
 	void setIDProdus(unsigned int id)
 	{
 		if (id != 0)
-			this->idProdus = idProdus;
+			this->idProdus = id;
 		else
+			cout << "id invalid"; //TODO: exceptie
 	}
 
-protected:
-	unsigned int idProdus;
-	unsigned int stoc;
-	float pret;
-	Status statusProdus;
+	unsigned int getStoc() { return this->stoc; }
+	void setStoc(unsigned int stoc)
+	{
+		if (stoc > 0)
+			this->stoc = stoc;
+		else
+			cout << "stoc invalid!" << endl; //TODO: exception;
+	}
+
+	float getPret() { return this->pret; }
+	void setPret(float pret)
+	{
+		if (pret > 0)
+			this->pret = pret;
+		else
+			cout << "pret invalid"; //TODO: exception;
+	}
+
+	Status getStatusProdus() { return this->statusProdus; }
+	void setStatusProdus(Status s)
+	{
+		this->statusProdus = s; //TODO: daca exista validari, ar trebui sa le fac.
+	}
+
 };
 
 class Carte : public Produs
@@ -310,28 +358,17 @@ private:
 
 int main()
 {
-	Status s1 = Status::Inactiv;
-	cin >> s1;
-
-
-	Categorie c1 = Categorie::Nedefinit;
-	cin >> c1;
-
-	genLiterar gl = genLiterar::LiterarNedefinit;
-	cin >> gl;
-
-
-	genMuzical gm = genMuzical::MuzicalNedefinit;
-	cin >> gm;
-
-
-	cout << "status: " << s1 << endl;
-	cout << "categorie: " << c1 << endl;
-	cout << "gen literar: " << gl;
-	cout << "gen muzical: " << gm;
-
+	Produs p;
 	
+	p.setIDProdus(200);
+	p.setPret(100);
+	p.setStatusProdus(Status::Activ);
+	p.setStoc(150);
 
+	cout << p.getIDProdus();
+	cout << p.getPret();
+	cout << p.getStatusProdus();
+	cout << p.getStoc();
 	return 0;
 }
 
