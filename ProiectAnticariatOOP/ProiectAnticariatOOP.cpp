@@ -417,6 +417,61 @@ public:
 		
 		this->gen_literar = gl;
 	}
+	
+	char* getTitlu() { return this->titlu; }
+	void setTitlu(char* titlu)
+	{
+		if (strlen(titlu) > 0)
+		{
+			if (this->titlu != NULL)
+				delete[] this->titlu;
+			this->titlu = new char[strlen(titlu) + 1];
+			strcpy_s(this->titlu, strlen(titlu) + 1, titlu);
+		}
+			
+	}
+	
+	char* getAutor() { return this->autor; }
+	void setAutor(char* autor)
+	{
+		if (strlen(autor) > 0)
+		{
+			if (this->autor != NULL)
+				delete[] this->autor;
+			this->autor = new char[strlen(autor) + 1];
+			strcpy_s(this->autor, strlen(autor) + 1, autor);
+		}
+	}
+
+	char* getEditura() { return this->editura; }
+	void setEditura(char* editura)
+	{
+		if (strlen(editura) > 0)
+		{
+			if (this->editura != NULL)
+				delete[] this->editura;
+			this->editura = new char[strlen(editura)+1];
+			strcpy_s(this->editura, strlen(editura) + 1, editura);
+		}
+	}
+
+	unsigned int getNumarPagini() { return this->numarPagini; }
+	void setNumarPagini(unsigned int nrPag)
+	{
+		if (nrPag > 0)
+			this->numarPagini = nrPag;
+	}
+
+	unsigned int getAnAparitie() { return this->anAparitie; }
+	void setAnAparitie(unsigned int an)
+	{
+		if (an > 0)
+			this->anAparitie = an;
+	}
+
+	genLiterar getGenLiterar() { return this->gen_literar; }
+	void setGenLiterar(genLiterar gen) { this->gen_literar = gen; }
+
 	~Carte()
 	{
 		delete[] this->titlu;
@@ -488,6 +543,47 @@ public:
 			this->durata = 0;
 		this->gen_muzical = gm;
 	}
+
+	char* getNumeAlbum() { return this->numeAlbum; }
+	void setNumeAlbum(char* nume)
+	{ 
+		if (strlen(nume) > 0) 
+		{
+			if (this->numeAlbum != NULL)
+				delete[] this->numeAlbum;
+			this->numeAlbum = new char[strlen(nume) + 1];
+			strcpy_s(this->numeAlbum, strlen(nume) + 1, numeAlbum);
+		}
+	}
+
+	char* getNumeArtist() { return this->artist; }
+	void setNumeArtist(char* numeArtist)
+	{
+		if (strlen(numeArtist) > 0)
+		{
+			if (this->artist != NULL)
+				delete[] this->artist;
+			this->artist = new char[strlen(numeArtist) + 1];
+			strcpy_s(this->artist, strlen(numeArtist) + 1, numeArtist);
+		}
+	}
+
+	unsigned int getNumarPiese() { return this->numarPiese; }
+	void setNumarPiese(int nr)
+	{
+		if (nr > 0)
+			this->numarPiese = nr;
+	}
+
+	float getDurata() { return this->durata; }
+	void setDurata(float durata)
+	{
+		if (durata > 0)
+			this->durata = durata;
+	}
+
+	genMuzical getGenMuzical() { return this->gen_muzical; }
+	void setGenMuzical(genMuzical gen) { this->gen_muzical = gen; }
 
 	~Vinyl()
 	{
