@@ -6,7 +6,7 @@ Proiectul trebuie sa contina urmatoarele elemente :
 
 
 Fiecare clasa va contine :
-Constructori(de copiere)
+
 Supraincarcarea operatorului de atribuire
 
 In plus, clasa care contine vectorul va contine :
@@ -277,12 +277,12 @@ public:
 
 	Produs(unsigned int idProdus, unsigned int stoc, float pret, Status status)
 	{
-			this->idProdus = idProdus;
+		this->idProdus = idProdus;
 			this->stoc = stoc;
 		if (pret > 0)
 			this->pret = pret;
 		else
-			this->pret = 0;	//TODO: poate exceptie
+			this->pret = 0;
 		this->statusProdus = status;
 	}
 
@@ -292,6 +292,19 @@ public:
 		this->stoc = p.stoc;
 		this->pret = p.pret;
 		this->statusProdus = p.statusProdus;
+	}
+
+	Produs& operator=(const Produs& p) {
+		if (&p != this)
+		{
+			this->idProdus = p.idProdus; //TODO: de gandit daca merita sa schimb id-ul produsului aici, desi nu cred. 
+			this->stoc = p.stoc;
+			this->pret = p.pret;
+			this->statusProdus = p.statusProdus;
+		}
+		else
+			throw exception("Autoasignare");
+		return *this;
 	}
 
 	unsigned int getIDProdus() { return this->idProdus; }
@@ -479,6 +492,34 @@ public:
 		this->numarPagini = carte.numarPagini;
 		this->anAparitie = carte.anAparitie;
 		this->gen_literar = carte.gen_literar;
+	}
+
+	Carte& operator=(const Carte& c)
+	{
+		if (&c != this)
+		{
+			if (this->titlu != NULL)
+				delete[] this->titlu;
+			this->titlu = new char[strlen(c.titlu) + 1];
+			strcpy_s(this->titlu, strlen(c.titlu) + 1, c.titlu);
+
+			if (this->autor != NULL)
+				delete[] this->autor;
+			this->autor = new char[strlen(c.autor) + 1];
+			strcpy_s(this->autor, strlen(c.autor) + 1, c.autor);
+
+			if (this->editura != NULL)
+				delete[] this->editura;
+			this->editura = new char[strlen(c.editura) + 1];
+			strcpy_s(this->editura, strlen(c.editura) + 1, c.editura);
+
+			this->numarPagini = c.numarPagini;
+			this->anAparitie = c.anAparitie;
+			this->gen_literar = c.gen_literar;
+		}
+		else
+			throw exception("Autoasignare");
+		return *this;
 	}
 
 	char* getTitlu() { return this->titlu; }
@@ -693,6 +734,29 @@ public:
 		this->gen_muzical = vinyl.gen_muzical;
 	}
 
+	Vinyl& operator=(const Vinyl& v)
+	{
+		if (&v != this)
+		{
+			if (this->numeAlbum != NULL)
+				delete[] this->numeAlbum;
+			this->numeAlbum = new char[strlen(v.numeAlbum) + 1];
+			strcpy_s(this->numeAlbum, strlen(v.numeAlbum) + 1, v.numeAlbum);
+
+			if (this->artist != NULL)
+				delete[] this->artist;
+			this->artist = new char[strlen(v.artist) + 1];
+			strcpy_s(this->artist, strlen(v.artist) + 1, v.artist);
+
+			this->numarPiese = v.numarPiese;
+			this->durata = v.durata;
+			this->gen_muzical = v.gen_muzical;
+		}
+		else
+			throw exception("Autoasignare");
+		return *this;
+
+	}
 	char* getNumeAlbum() { return this->numeAlbum; }
 	void setNumeAlbum(char* numeAlbum)
 	{ 
@@ -889,6 +953,31 @@ public:
 			this->produse[i] = comanda.produse[i];
 	}
 
+	Comanda& operator=(const Comanda& co)
+	{
+		if (&co != this)
+		{
+			if (this->numeClient != NULL)
+				delete[] this->numeClient;
+			this->numeClient = new char[strlen(co.numeClient) + 1];
+			strcpy_s(this->numeClient, strlen(co.numeClient) + 1, co.numeClient);
+
+			if (this->prenumeClient != NULL)
+				delete[] this->prenumeClient;
+			this->prenumeClient = new char[strlen(co.prenumeClient) + 1];
+			strcpy_s(this->prenumeClient, strlen(co.prenumeClient) + 1, co.prenumeClient);
+			this->valoareComanda = co.valoareComanda;
+			this->numarProduse = co.numarProduse;
+			for (int i = 0; i < this->numarProduse; i++)
+				this->produse[i] = co.produse[i];
+
+		}
+		else {
+			throw exception("Autoasignare");
+
+		}
+		return *this;
+	}
 	char* getNumeClient() { return this->numeClient; }
 	void setNumeClient(const char* numeClient) 
 	{
@@ -1011,11 +1100,41 @@ int main()
 		cout << c1 << endl;
 		cout << endl << v1 << endl; 
 
+		Produs* p1 = new Produs();
+		Produs* p2 = p1;
+//		cout << p2 << endl << endl;
+
+		Carte* c3 = c1;
+//		cout << c3;
+
+		Vinyl* v3 = v1;
+		cout << v3;
+
+		Comanda co;
+		co.setNumeClient("Oprea");
+		co.setPrenumeClient("Ovidiu-Cristian");
+		co.setValoareComanda(1060);
+
+		//cout << co[3];
+
+		Comanda co2;
+		co2 = co2;
+
+		Produs* pEx = new Produs();
+		pEx = pEx;
+
+
 	}
-	catch (out_of_range ex)
+	catch (out_of_range &ex)
 	{
 		cout << ex.what() << endl;
 	}
+	catch (exception &ex) 
+	{
+		cout << ex.what() << endl;
+	}
+	
+
 	return 0;
 }
 
