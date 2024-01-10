@@ -282,7 +282,16 @@ public:
 		this->statusProdus = Status::Inactiv;
 	}
 
-	//TODO: Constructor cu parametri;
+	Produs(unsigned int idProdus, unsigned int stoc, float pret, Status status)
+	{
+			this->idProdus = idProdus;
+			this->stoc = stoc;
+		if (pret > 0)
+			this->pret = pret;
+		else
+			this->pret = 0;	//TODO: poate exceptie
+		this->statusProdus = status;
+	}
 
 	unsigned int getIDProdus() { return this->idProdus; }
 	void setIDProdus(unsigned int id)
@@ -349,7 +358,7 @@ public:
 		this->gen_literar = genLiterar::LiterarNedefinit;
 	}
 
-	Carte(char* titlu, char* autor, char* editura, unsigned int nrPag, unsigned int an, genLiterar gl)
+	Carte(const char* titlu, const char* autor, const char* editura, unsigned int nrPag, unsigned int an, genLiterar gl)
 	{
 		if (strlen(titlu) != 0) 
 		{
@@ -408,7 +417,13 @@ public:
 		
 		this->gen_literar = gl;
 	}
-
+	~Carte()
+	{
+		delete[] this->titlu;
+		delete[] this->autor;
+		delete[] this->editura;
+	}
+	
 private:
 	char* titlu;
 	char* autor;
@@ -432,6 +447,54 @@ public:
 		this->gen_muzical = genMuzical::MuzicalNedefinit;
 	}
 
+	Vinyl(const char* na, const char* art, unsigned int nrPiese, float length, genMuzical gm)
+	{
+		if (strlen(na) > 0) 
+		{
+			if (this->numeAlbum != NULL)
+				delete[] this->numeAlbum;
+			this->numeAlbum = new char[strlen(na) + 1];
+			strcpy_s(this->numeAlbum, strlen(na) + 1, na);
+		}
+		else
+		{
+			if (this->numeAlbum != NULL)
+				delete[] this->numeAlbum;
+			this->numeAlbum = new char[10];
+			strcpy_s(this->numeAlbum, 10, "undefined");
+		}
+
+		if (strlen(art) > 0)
+		{
+			if (this->artist != NULL)
+				delete[] this->artist;
+			this->artist = new char[sizeof(art) + 1];
+			strcpy_s(this->artist, sizeof(art) + 1, art);
+		}
+		else
+		{
+			if (this->artist != NULL)
+				delete[] this->artist;
+			this->artist = new char[sizeof(art) + 1];
+			strcpy_s(this->artist, sizeof(art) + 1, art);
+		}
+		if (nrPiese > 0)
+			this->numarPiese = nrPiese;
+		else
+			this->numarPiese = 0;
+		if (length > 0)
+			this->durata = length;
+		else
+			this->durata = 0;
+		this->gen_muzical = gm;
+	}
+
+	~Vinyl()
+	{
+		delete[] this->numeAlbum;
+		delete[] this->artist;
+	}
+
 private:
 	char* numeAlbum;
 	char* artist;
@@ -452,7 +515,8 @@ private:
 
 int main()
 {
-
+	Produs pParam(100, 100, 100, Status::Activ);
+	Carte cParam("Salut", "Salut", "Humanitas", 100, 2003, genLiterar::Filosofie);
 	return 0;
 }
 
