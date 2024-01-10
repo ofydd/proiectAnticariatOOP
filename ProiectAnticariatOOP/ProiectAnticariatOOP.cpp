@@ -277,12 +277,19 @@ public:
 
 	Produs(unsigned int idProdus, unsigned int stoc, float pret, Status status)
 	{
-		this->idProdus = idProdus;
+		if (idProdus > 0)
+			this->idProdus = idProdus;
+		else
+			this->idProdus = 0;
+		if (stoc > 0)
 			this->stoc = stoc;
+		else
+			this->stoc = 0;
 		if (pret > 0)
 			this->pret = pret;
 		else
 			this->pret = 0;
+
 		this->statusProdus = status;
 	}
 
@@ -312,8 +319,7 @@ public:
 	{
 		if (id != 0)
 			this->idProdus = id;
-		else
-			cout << "id invalid"; //TODO: exceptie
+
 	}
 
 	unsigned int getStoc() { return this->stoc; }
@@ -321,8 +327,6 @@ public:
 	{
 		if (stoc > 0)
 			this->stoc = stoc;
-		else
-			cout << "stoc invalid!" << endl; //TODO: exception;
 	}
 
 	float getPret() { return this->pret; }
@@ -330,8 +334,6 @@ public:
 	{
 		if (pret > 0)
 			this->pret = pret;
-		else
-			cout << "pret invalid"; //TODO: exception;
 	}
 
 	Status getStatusProdus() { return this->statusProdus; }
