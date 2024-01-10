@@ -286,6 +286,14 @@ public:
 		this->statusProdus = status;
 	}
 
+	Produs(const Produs& p)
+	{
+		this->idProdus = p.idProdus;
+		this->stoc = p.stoc;
+		this->pret = p.pret;
+		this->statusProdus = p.statusProdus;
+	}
+
 	unsigned int getIDProdus() { return this->idProdus; }
 	void setIDProdus(unsigned int id)
 	{
@@ -355,6 +363,14 @@ public:
 
 class Carte : public Produs
 {
+private:
+	char* titlu;
+	char* autor;
+	char* editura;
+	unsigned int numarPagini;
+	unsigned int anAparitie;
+	genLiterar gen_literar;
+
 public:
 	Carte() : Produs()
 	{
@@ -444,6 +460,27 @@ public:
 		this->gen_literar = gl;
 	}
 	
+	Carte(const Carte& carte) {
+		if (this->titlu != NULL)
+			delete[] this->titlu;
+		this->titlu = new char[strlen(carte.titlu) + 1];
+		strcpy_s(this->titlu, strlen(carte.titlu) + 1, carte.titlu);
+		
+		if (this->autor != NULL)
+			delete[] this->autor;
+		this->autor = new char[strlen(carte.autor) + 1];
+		strcpy_s(this->autor, strlen(carte.autor) + 1, carte.autor);
+
+		if (this->editura != NULL)
+			delete[] this->editura;
+		this->editura = new char[strlen(carte.editura) + 1];
+		strcpy_s(this->editura, strlen(carte.editura) + 1, carte.editura);
+
+		this->numarPagini = carte.numarPagini;
+		this->anAparitie = carte.anAparitie;
+		this->gen_literar = carte.gen_literar;
+	}
+
 	char* getTitlu() { return this->titlu; }
 	void setTitlu(char* titlu)
 	{
@@ -574,17 +611,17 @@ public:
 		delete[] this->editura;
 	}
 	
-private:
-	char* titlu;
-	char* autor;
-	char* editura;
-	unsigned int numarPagini;
-	unsigned int anAparitie;
-	genLiterar gen_literar;
+
 };
 
 class Vinyl : public Produs
 {
+private:
+	char* numeAlbum;
+	char* artist;
+	unsigned int numarPiese;
+	float durata;
+	genMuzical gen_muzical;
 public:
 	Vinyl() : Produs()
 	{
@@ -638,6 +675,22 @@ public:
 		else
 			this->durata = 0;
 		this->gen_muzical = gm;
+	}
+
+	Vinyl(const Vinyl& vinyl)
+	{
+		if (this->numeAlbum != NULL)
+			delete[] this->numeAlbum;
+		this->numeAlbum = new char[strlen(vinyl.numeAlbum) + 1];
+		strcpy_s(this->numeAlbum, strlen(vinyl.numeAlbum) + 1, vinyl.numeAlbum);
+
+		if (this->artist != NULL)
+			delete[] this->artist;
+		this->artist = new char[strlen(vinyl.artist) + 1];
+		strcpy_s(this->artist, strlen(vinyl.artist) + 1, vinyl.artist);
+		this->numarPiese = vinyl.numarPiese;
+		this->durata = vinyl.durata;
+		this->gen_muzical = vinyl.gen_muzical;
 	}
 
 	char* getNumeAlbum() { return this->numeAlbum; }
@@ -744,16 +797,16 @@ public:
 		delete[] this->artist;
 	}
 
-private:
-	char* numeAlbum;
-	char* artist;
-	unsigned int numarPiese;
-	float durata;
-	genMuzical gen_muzical;
+
 };
 
 class Comanda
 {
+private:
+	char* numeClient;
+	char* prenumeClient;
+	float valoareComanda; //TODO: De transformat in calculeazaValoareComanda();
+	int numarProduse;
 public:
 	Produs** produse;
 
@@ -817,6 +870,23 @@ public:
 		{
 			this->produse[i] = produse[i];
 		}
+	}
+
+	Comanda(const Comanda& comanda)
+	{
+		if (this->numeClient != NULL)
+			delete[] this->numeClient;
+		this->numeClient = new char[strlen(comanda.numeClient) + 1];
+		strcpy_s(this->numeClient, strlen(comanda.numeClient) + 1, comanda.numeClient);
+
+		if (this->prenumeClient != NULL)
+			delete[] this->prenumeClient;
+		this->prenumeClient = new char[strlen(comanda.prenumeClient) + 1];
+		strcpy_s(this->prenumeClient, strlen(comanda.prenumeClient) + 1, comanda.prenumeClient);
+		this->valoareComanda = comanda.valoareComanda;
+		this->numarProduse = comanda.numarProduse;
+		for (int i = 0; i < this->numarProduse; i++)
+			this->produse[i] = comanda.produse[i];
 	}
 
 	char* getNumeClient() { return this->numeClient; }
@@ -924,11 +994,8 @@ public:
 		delete[] this->prenumeClient;
 		delete[] this->produse;
 	}
-private:
-	char* numeClient;
-	char* prenumeClient;
-	float valoareComanda; //TODO: De transformat in calculeazaValoareComanda();
-	int numarProduse;
+
+
 };
 
 int main()
@@ -937,14 +1004,12 @@ int main()
 	{
 		Carte* c = new Carte(1, 1, 10, Status::Activ, "Baltagul", "Mihail Sadoveanu", "Facla", 131, 1973, genLiterar::Proza);
 		Vinyl* v = new Vinyl(2, 1, 25, Status::Activ, "Mugur de fluier", "Phoenix", 7, 131, genMuzical::Rock);
-		Comanda co;
-		co.setNumeClient("Oprea");
-		co.setPrenumeClient("Ovidiu");
-		co += c;
-		co += v;
+		
+		Carte* c1 = c;
+		Vinyl* v1 = v;
 
-		co -= c;
-		cout << co;
+		cout << c1 << endl;
+		cout << endl << v1 << endl; 
 
 	}
 	catch (out_of_range ex)
