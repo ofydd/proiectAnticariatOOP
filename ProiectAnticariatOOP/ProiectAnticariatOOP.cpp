@@ -603,10 +603,113 @@ class Comanda
 {
 public:
 	Produs** produse;
+
+	Comanda()
+	{
+		this->numeClient = new char[10];
+		strcpy_s(this->numeClient, 10, "undefined");
+		this->prenumeClient = new char[10];
+		strcpy_s(this->prenumeClient, 10, "undefined");
+		this->valoareComanda = 0;
+		this->produse = new Produs * [0];
+		this->numarProduse = 0;
+	}
+
+	Comanda(char* numeClient, char* prenumeClient, float valoareComanda, Produs** produse, int numarProduse)
+	{
+		if (strlen(numeClient) > 0)
+		{
+			if (this->numeClient != NULL)
+				delete[] this->numeClient;
+			this->numeClient = new char[strlen(numeClient) + 1];
+			strcpy_s(this->numeClient, strlen(numeClient) + 1, numeClient);
+		}
+		else
+		{
+			if (this->numeClient != NULL)
+				delete[] this->numeClient;
+			this->numeClient = new char[10];
+			strcpy_s(this->numeClient, 10, "undefined");
+		}
+
+		if (strlen(prenumeClient) > 0)
+		{
+			if (this->prenumeClient != NULL)
+				delete[] this->prenumeClient;
+			this->prenumeClient = new char[strlen(prenumeClient)+1];
+			strcpy_s(this->prenumeClient, strlen(prenumeClient) + 1, prenumeClient);
+		}
+		else
+		{
+			if (this->prenumeClient != NULL)
+				delete[] this->prenumeClient;
+			this->prenumeClient = new char[10];
+			strcpy_s(this->prenumeClient, 10, "undefined");
+		}
+		if (valoareComanda > 0)
+			this->valoareComanda = valoareComanda;
+		else
+			this->valoareComanda = 0;
+		if (numarProduse > 0)
+			this->numarProduse = numarProduse;
+		else
+		{
+			this->numarProduse = 0;
+			if (this->produse != NULL)
+				delete[] produse;
+			this->produse = new Produs * [0];
+		}
+			
+		for (int i = 0; i < this->numarProduse; i++)
+		{
+			this->produse[i] = produse[i];
+		}
+	}
+
+	char* getNumeClient() { return this->numeClient; }
+	void setNumeClient(char* numeClient) 
+	{
+		if (strlen(numeClient) > 0)
+		{
+			if (this->numeClient != NULL)
+				delete[] this->numeClient;
+			this->numeClient = new char[strlen(numeClient) + 1];
+			strcpy_s(this->numeClient, strlen(numeClient) + 1, numeClient);
+		}
+	}
+
+	char* getPrenumeClient() { return this->prenumeClient; }
+	void setPrenumeClient(char* prenumeClient)
+	{
+		if (strlen(prenumeClient) > 0)
+		{
+			if (this->prenumeClient != NULL)
+				delete[] this->prenumeClient;
+			this->prenumeClient = new char[strlen(prenumeClient) + 1];
+			strcpy_s(this->prenumeClient, strlen(prenumeClient) + 1, prenumeClient);
+		}
+	}
+
+	float getValoareComanda() { return this->valoareComanda; } //momentan ramane asa, desi am banuiala ca valoareComanda o sa devina calculeazaValoareComanda();
+	void setValoareComanda(float valoareComanda) {
+		this->valoareComanda = valoareComanda; //Nu mai stau sa fac validarea
+	}
+
+	int getNumarProduse() { return this->numarProduse; }
+	// setNumarProduse nu are sens, caci nu vreau ca utilizatorul sa poata sa modifice numarul de produse, caci va strica vectorul.
+	
+
+	~Comanda()
+	{
+		delete[] this->numeClient;
+		delete[] this->prenumeClient;
+		delete[] this->produse;
+	}
 private:
 	char* numeClient;
 	char* prenumeClient;
 	float valoareComanda;
+	int numarProduse;
 };
 
 int main()
