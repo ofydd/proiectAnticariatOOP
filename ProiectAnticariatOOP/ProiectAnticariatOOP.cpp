@@ -9,12 +9,8 @@ Fiecare clasa va contine :
 Constructori(de copiere)
 Supraincarcarea operatorului de atribuire
 
-Supraincarcarea operatorilor de citire si afisare
 In plus, clasa care contine vectorul va contine :
 
-supraincarcarea operatorului += pentru a adauga un element in vector
-supraincarcarea operatorului -= pentru a elimina un element din vector
-operatorul de acces pe baza de index, pentru citirea unui element din vector de la o pozitie data
 serializare / deserializare in / din fisiere binare a vectorului
 
 */
@@ -60,7 +56,7 @@ istream& operator>>(istream& is, Status& status)
 	return is;
 }
 
-enum Categorie
+enum Categorie	//TODO: Implementare in cadrul clasei de baza.
 {
 	Carti,
 	Vinyluri,
@@ -602,14 +598,14 @@ public:
 	}
 
 	Vinyl(unsigned int idProdus, unsigned int stoc, float pret, Status status, 
-		  const char* na, const char* art, unsigned int nrPiese, float length, genMuzical gm) : Produs(idProdus, stoc, pret, status)
+		  const char* numeAlbum, const char* numeArtist, unsigned int nrPiese, float length, genMuzical gm) : Produs(idProdus, stoc, pret, status)
 	{
-		if (strlen(na) > 0) 
+		if (strlen(numeAlbum) > 0) 
 		{
 			if (this->numeAlbum != NULL)
 				delete[] this->numeAlbum;
-			this->numeAlbum = new char[strlen(na) + 1];
-			strcpy_s(this->numeAlbum, strlen(na) + 1, na);
+			this->numeAlbum = new char[strlen(numeAlbum) + 1];
+			strcpy_s(this->numeAlbum, strlen(numeAlbum) + 1, numeAlbum);
 		}
 		else
 		{
@@ -619,19 +615,19 @@ public:
 			strcpy_s(this->numeAlbum, 10, "undefined");
 		}
 
-		if (strlen(art) > 0)
+		if (strlen(numeArtist) > 0)
 		{
 			if (this->artist != NULL)
 				delete[] this->artist;
-			this->artist = new char[strlen(art) + 1];
-			strcpy_s(this->artist, strlen(art) + 1, art);
+			this->artist = new char[strlen(numeArtist) + 1];
+			strcpy_s(this->artist, strlen(numeArtist) + 1, numeArtist);
 		}
 		else
 		{
 			if (this->artist != NULL)
 				delete[] this->artist;
-			this->artist = new char[sizeof(art) + 1];
-			strcpy_s(this->artist, sizeof(art) + 1, art);
+			this->artist = new char[sizeof(numeArtist) + 1];
+			strcpy_s(this->artist, sizeof(numeArtist) + 1, numeArtist);
 		}
 		if (nrPiese > 0)
 			this->numarPiese = nrPiese;
@@ -772,7 +768,7 @@ public:
 		this->numarProduse = 0;
 	}
 
-	Comanda(char* numeClient, char* prenumeClient, float valoareComanda, Produs** produse, int numarProduse)
+	Comanda(const char* numeClient, const char* prenumeClient, float valoareComanda, Produs** produse, int numarProduse)
 	{
 		if (strlen(numeClient) > 0)
 		{
@@ -824,7 +820,7 @@ public:
 	}
 
 	char* getNumeClient() { return this->numeClient; }
-	void setNumeClient(char* numeClient) 
+	void setNumeClient(const char* numeClient) 
 	{
 		if (strlen(numeClient) > 0)
 		{
@@ -836,7 +832,7 @@ public:
 	}
 
 	char* getPrenumeClient() { return this->prenumeClient; }
-	void setPrenumeClient(char* prenumeClient)
+	void setPrenumeClient(const char* prenumeClient)
 	{
 		if (strlen(prenumeClient) > 0)
 		{
@@ -855,6 +851,72 @@ public:
 	int getNumarProduse() { return this->numarProduse; }
 	// setNumarProduse nu are sens, caci nu vreau ca utilizatorul sa poata sa modifice numarul de produse, caci va strica vectorul.
 	
+	//TODO Operator<< Operator>> 
+	
+	void operator+=(Produs* produs)
+	{
+		Produs** temp = new Produs * [this->numarProduse+1];
+		for (int i = 0; i < this->numarProduse; i++)
+		{
+			temp[i] = this->produse[i];
+		}
+		temp[this->numarProduse] = produs;
+		delete[] this->produse;
+		this->produse = temp;
+		this->numarProduse++;
+	}
+
+	void operator-=(Produs* produs)
+	{
+		Produs** temp = new Produs * [this->numarProduse-1];
+		int deSters = produs->getIDProdus();
+		int indexTemp = 0;
+		for (int i = 0; i < this->numarProduse; i++)
+		{
+			if (deSters == this->produse[i]->getIDProdus())
+				continue;
+			else {
+				temp[indexTemp] = this->produse[i];
+				indexTemp++;
+			}
+				
+		}
+		delete[] this->produse;
+		this->produse = temp;
+		this->numarProduse--;
+	}
+
+	Produs* operator[](int index)
+	{
+		if (index >= this->numarProduse || index < 0)
+			throw out_of_range("Index invalid");
+		return this->produse[index];
+	}
+
+	friend ostream& operator<<(ostream& os, const Comanda& c)
+	{
+		os << "nume client: " << c.numeClient << endl;
+		os << "prenume client: " << c.prenumeClient << endl;
+		os << "valoare comanda: " << c.valoareComanda << endl;
+		os << "numar produse: " << c.numarProduse << endl;
+		os << "produse: " << endl;
+		for (int i = 0; i < c.numarProduse; i++)
+		{
+			cout << i + 1 << ". " << c.produse[i]->getIDProdus() << endl;
+		}
+		return os;
+	}
+
+	friend istream& operator>>(istream& is, Comanda& c)
+	{
+		cout << "Introduceti numele clientului: ";
+		cin >> c.numeClient;
+		cout << "Introduceti prenumele clientului:";
+		cin >> c.prenumeClient;
+		cout << "Introduceti valoarea comenzii";
+		cin >> c.valoareComanda;
+		//Introducem categoria. Facem Carte::read() sau Vinyl::read();
+	}
 
 	~Comanda()
 	{
@@ -865,17 +927,30 @@ public:
 private:
 	char* numeClient;
 	char* prenumeClient;
-	float valoareComanda;
+	float valoareComanda; //TODO: De transformat in calculeazaValoareComanda();
 	int numarProduse;
 };
 
 int main()
 {
-	Vinyl* v = new Vinyl();
-	cin >> v; 
-	cout << v;
+	try
+	{
+		Carte* c = new Carte(1, 1, 10, Status::Activ, "Baltagul", "Mihail Sadoveanu", "Facla", 131, 1973, genLiterar::Proza);
+		Vinyl* v = new Vinyl(2, 1, 25, Status::Activ, "Mugur de fluier", "Phoenix", 7, 131, genMuzical::Rock);
+		Comanda co;
+		co.setNumeClient("Oprea");
+		co.setPrenumeClient("Ovidiu");
+		co += c;
+		co += v;
 
-	
+		co -= c;
+		cout << co;
+
+	}
+	catch (out_of_range ex)
+	{
+		cout << ex.what() << endl;
+	}
 	return 0;
 }
 
