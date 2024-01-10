@@ -1,17 +1,14 @@
 #include <iostream>
+#include <string>
 using namespace std;
 /*
 Proiectul trebuie sa contina urmatoarele elemente :
 
-4 clase
-o clasa de baza
-doua clase derivate din clasa de baza
-o clasa care sa contina un vector cu elemente de tipul clasei de baza
+
 Fiecare clasa va contine :
-Constructori(fara parametri, cu parametri, de copiere)
-Destructori
+Constructori(de copiere)
 Supraincarcarea operatorului de atribuire
-Metode de acces pentru campurile private
+
 Supraincarcarea operatorilor de citire si afisare
 In plus, clasa care contine vectorul va contine :
 
@@ -276,7 +273,7 @@ protected:
 
 public:
 	Produs() {
-		this->idProdus = 0;
+		this->idProdus = 0; // TODO: de randomizat cu random();
 		this->stoc = 0;
 		this->pret = 0;
 		this->statusProdus = Status::Inactiv;
@@ -326,13 +323,44 @@ public:
 		this->statusProdus = s; //TODO: daca exista validari, ar trebui sa le fac.
 	}
 
+	virtual void display(ostream& os)
+	{
+		os << "idProdus: " << this->idProdus << endl;
+		os << "stoc: " << this->stoc << endl;
+		os << "pret: " << this->pret << endl;
+		os << "status: " << this->statusProdus << endl;
+	}
+
+	friend ostream& operator<<(ostream& os, Produs* produs)
+	{
+		produs->display(os);
+		return os;
+	}
+
+	virtual void read(istream& is)
+	{
+		cout << "Introduceti id-ul produsului: ";
+		is >> this->idProdus;
+		cout << "Introduceti pretul: ";
+		is >> this->pret;
+		cout << "Introduceti cantitatea in stoc: ";
+		is >> this->stoc;
+		is >> this->statusProdus;
+	}
+
+	friend istream& operator>>(istream& is, Produs* produs)
+	{
+		produs->read(is);
+		return is;
+	}
+
 	~Produs(){}
 };
 
 class Carte : public Produs
 {
 public:
-	Carte()
+	Carte() : Produs()
 	{
 		if (this->titlu != NULL) 
 		{
@@ -356,9 +384,11 @@ public:
 		this->numarPagini = 0;
 		this->anAparitie = 0;
 		this->gen_literar = genLiterar::LiterarNedefinit;
-	}
+	} 
 
-	Carte(const char* titlu, const char* autor, const char* editura, unsigned int nrPag, unsigned int an, genLiterar gl)
+	Carte(unsigned int idProdus, unsigned int stoc, float pret, Status status, 
+		  const char* titlu, const char* autor, const char* editura, 
+		  unsigned int nrPag, unsigned int anAparitie, genLiterar gl) : Produs(idProdus, stoc, pret, status)
 	{
 		if (strlen(titlu) != 0) 
 		{
@@ -472,6 +502,75 @@ public:
 	genLiterar getGenLiterar() { return this->gen_literar; }
 	void setGenLiterar(genLiterar gen) { this->gen_literar = gen; }
 
+	virtual void display(ostream& os) override
+	{
+		Produs::display(os);
+		os << "titlu: " << this->titlu << endl;
+		os << "autor: " << this->autor << endl;
+		os << "editura: " << this->editura << endl;
+		os << "nr. pagini: " << this->numarPagini << endl;
+		os << "an aparitie: " << this->anAparitie << endl;
+		os << "gen literar: " << this->gen_literar << endl;
+	}
+	friend ostream& operator<<(ostream& os, Carte* c)
+	{
+		c->display(os);
+		return os;
+	}
+
+	virtual void read(istream& is) override
+	{
+		Produs::read(is);
+		cout << "Introduceti titlul: ";
+		char* titluTemp = new char[100];
+		is >> ws;
+		is.getline(titluTemp, 100);
+		if (strlen(titluTemp)>0) 
+		{
+			if (this->titlu != 0)
+				delete[] this->titlu;
+			this->titlu = new char[strlen(titluTemp) + 1];
+			strcpy_s(this->titlu, strlen(titluTemp) + 1, (char*)titluTemp);
+		}
+		
+		cout << "Introduceti autorul: ";
+		char* autorTemp = new char[100];
+		is >> ws;
+		is.getline(autorTemp, 100);
+		if (strlen(autorTemp) > 0)
+		{
+			if (this->autor != NULL)
+				delete[] this->autor;
+			this->autor = new char[strlen(autorTemp) + 1];
+			strcpy_s(this->autor, strlen(autorTemp) + 1, autorTemp);
+		}
+
+		cout << "Introduceti editura: ";
+		char* edituraTemp = new char[100];
+		is >> ws;
+		is.getline(edituraTemp, 100);
+		if (strlen(edituraTemp) > 0)
+		{
+			if (this->editura != NULL)
+				delete[] this->editura;
+			this->editura = new char[strlen(edituraTemp) + 1];
+			strcpy_s(this->editura, strlen(edituraTemp) + 1, edituraTemp);
+		}
+		cout << "Introduceti numarul de pagini: ";
+		is >> numarPagini; //TODO: validari
+		
+		cout << "Introduceti anul aparitiei: ";
+		is >> anAparitie;
+
+		is >> gen_literar;
+	}
+
+	friend istream& operator>>(istream& is, Carte* c)
+	{
+		c->read(is);
+		return is;
+	}
+
 	~Carte()
 	{
 		delete[] this->titlu;
@@ -491,7 +590,7 @@ private:
 class Vinyl : public Produs
 {
 public:
-	Vinyl()
+	Vinyl() : Produs()
 	{
 		this->numeAlbum = new char[10];
 		strcpy_s(this->numeAlbum, 10, "undefined");
@@ -502,7 +601,8 @@ public:
 		this->gen_muzical = genMuzical::MuzicalNedefinit;
 	}
 
-	Vinyl(const char* na, const char* art, unsigned int nrPiese, float length, genMuzical gm)
+	Vinyl(unsigned int idProdus, unsigned int stoc, float pret, Status status, 
+		  const char* na, const char* art, unsigned int nrPiese, float length, genMuzical gm) : Produs(idProdus, stoc, pret, status)
 	{
 		if (strlen(na) > 0) 
 		{
@@ -523,8 +623,8 @@ public:
 		{
 			if (this->artist != NULL)
 				delete[] this->artist;
-			this->artist = new char[sizeof(art) + 1];
-			strcpy_s(this->artist, sizeof(art) + 1, art);
+			this->artist = new char[strlen(art) + 1];
+			strcpy_s(this->artist, strlen(art) + 1, art);
 		}
 		else
 		{
@@ -545,14 +645,14 @@ public:
 	}
 
 	char* getNumeAlbum() { return this->numeAlbum; }
-	void setNumeAlbum(char* nume)
+	void setNumeAlbum(char* numeAlbum)
 	{ 
-		if (strlen(nume) > 0) 
+		if (strlen(numeAlbum) > 0) 
 		{
 			if (this->numeAlbum != NULL)
 				delete[] this->numeAlbum;
-			this->numeAlbum = new char[strlen(nume) + 1];
-			strcpy_s(this->numeAlbum, strlen(nume) + 1, numeAlbum);
+			this->numeAlbum = new char[strlen(numeAlbum) + 1];
+			strcpy_s(this->numeAlbum, strlen(numeAlbum) + 1, numeAlbum);
 		}
 	}
 
@@ -584,6 +684,63 @@ public:
 
 	genMuzical getGenMuzical() { return this->gen_muzical; }
 	void setGenMuzical(genMuzical gen) { this->gen_muzical = gen; }
+
+	virtual void display(ostream& os) override
+	{
+		Produs::display(os);
+		os << "numele albumului: " << this->numeAlbum << endl;
+		os << "numele artistului: " << this->artist << endl;
+		os << "numar de piese: " << this->numarPiese << endl;
+		os << "durata: " << this->durata << endl;
+		os << "gen muzical: " << this->gen_muzical << endl;
+	}
+
+	friend ostream& operator<<(ostream& os, Vinyl* vinyl)
+	{
+		vinyl->display(os);
+		return os;
+	}
+
+
+	virtual void read(istream& is) override
+	{
+		Produs::read(is);
+		cout << "Introduceti numele albumului: ";
+		char* albumTemp = new char[100];
+		is >> ws;
+		is.getline(albumTemp, 100);
+		if (strlen(albumTemp) > 0)
+		{
+			if (strlen(this->numeAlbum) > 0)
+				delete[] this->numeAlbum;
+			this->numeAlbum = new char[strlen(albumTemp) + 1];
+			strcpy_s(this->numeAlbum, strlen(albumTemp) + 1, albumTemp);
+		}
+
+		cout << "Introduceti numele artistului: ";
+		char* artistTemp = new char[100];
+		is >> ws;
+		is.getline(artistTemp, 100);
+		if (strlen(artistTemp) > 0)
+		{
+			if (strlen(this->artist) > 0)
+				delete[] this->artist;
+			this->artist = new char[strlen(artistTemp) + 1];
+			strcpy_s(this->artist, strlen(artistTemp) + 1, artistTemp);
+		}
+		cout << "Introduceti numarul de piese: ";
+		is >> numarPiese;
+		cout << "Introduceti durata: ";
+		is >> durata;
+
+		is >> gen_muzical;
+	}
+
+	friend istream& operator>>(istream& is, Vinyl* vinyl)
+	{
+		vinyl->read(is);
+		return is;
+	}
 
 	~Vinyl()
 	{
@@ -714,8 +871,11 @@ private:
 
 int main()
 {
-	Produs pParam(100, 100, 100, Status::Activ);
-	Carte cParam("Salut", "Salut", "Humanitas", 100, 2003, genLiterar::Filosofie);
+	Vinyl* v = new Vinyl();
+	cin >> v; 
+	cout << v;
+
+	
 	return 0;
 }
 
