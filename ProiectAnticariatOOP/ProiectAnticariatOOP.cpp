@@ -65,8 +65,8 @@ istream& operator>>(istream& is, Status& status)
 
 enum Categorie
 {
-	Carte,
-	Vinyl,
+	Carti,
+	Vinyluri,
 	Nedefinit //pentru cazul default din switch(categorie) si pentru constructorul fara parametri
 };
 
@@ -74,10 +74,10 @@ ostream& operator<<(ostream& os, const Categorie& categorie)
 {
 	switch (categorie)
 	{
-	case Categorie::Carte:
+	case Categorie::Carti:
 		cout << "carte ";
 		break;
-	case Categorie::Vinyl:
+	case Categorie::Vinyluri:
 		cout << "vinyl ";
 		break;
 	case Categorie::Nedefinit:
@@ -99,10 +99,10 @@ istream& operator>>(istream& is, Categorie& categorie)
 
 	switch (alegere) {
 	case 1:
-		categorie = Categorie::Carte;
+		categorie = Categorie::Carti;
 		break;
 	case 2:
-		categorie = Categorie::Vinyl;
+		categorie = Categorie::Vinyluri;
 		break;
 	default:
 		cout << "Categorie necunoscuta! Produsul a fost incadrat automat ca fiind nedefinit";
@@ -282,12 +282,7 @@ public:
 		this->statusProdus = Status::Inactiv;
 	}
 
-	Produs(unsigned int idProdus, unsigned int stoc, float pret, Status status) {
-		this->idProdus = idProdus;
-		this->stoc = stoc;
-		this->pret = pret;
-		this->statusProdus = status;
-	}
+	//TODO: Constructor cu parametri;
 
 	unsigned int getIDProdus() { return this->idProdus; }
 	void setIDProdus(unsigned int id)
@@ -322,22 +317,121 @@ public:
 		this->statusProdus = s; //TODO: daca exista validari, ar trebui sa le fac.
 	}
 
+	~Produs(){}
 };
 
 class Carte : public Produs
 {
 public:
+	Carte()
+	{
+		if (this->titlu != NULL) 
+		{
+			delete[] this->titlu;
+		}
+		this->titlu = new char[10];
+		strcpy_s(this->titlu, 10, "undefined");
+
+		if (this->autor != NULL) 
+		{
+			delete[] this->autor;
+		}
+		this->autor = new char[10];
+		strcpy_s(this->autor, 10, "undefined");
+
+		if (this->editura != NULL)
+			delete[] this->editura;
+		this->editura = new char[10];
+		strcpy_s(this->editura, 10, "undefined");
+
+		this->numarPagini = 0;
+		this->anAparitie = 0;
+		this->gen_literar = genLiterar::LiterarNedefinit;
+	}
+
+	Carte(char* titlu, char* autor, char* editura, unsigned int nrPag, unsigned int an, genLiterar gl)
+	{
+		if (strlen(titlu) != 0) 
+		{
+			if (this->titlu != NULL)
+				delete[] this->titlu;
+			this->titlu = new char[strlen(titlu) + 1];
+			strcpy_s(this->titlu, strlen(titlu) + 1, titlu);
+		}
+		else
+		{
+			if (this->titlu != NULL)
+				delete[] this->titlu;
+			this->titlu = new char[10];
+			strcpy_s(this->titlu, 10, "undefined");
+		}
+
+		if (strlen(autor) > 0)
+		{
+			if (this->autor != NULL)
+				delete[] this->autor;
+			this->autor = new char[strlen(autor) + 1];
+			strcpy_s(this->autor, strlen(autor) + 1, autor);
+		}
+		else
+		{
+			if (this->autor != NULL)
+				delete[] this->autor;
+			this->autor = new char[10];
+			strcpy_s(this->autor, 10, "undefined");
+		}
+
+		if (strlen(editura) > 0)
+		{
+			if (this->editura != NULL)
+				delete[] this->editura;
+			this->editura = new char[strlen(editura) + 1];
+			strcpy_s(this->editura, strlen(editura) + 1, editura);
+		}
+		else
+		{
+			if (this->editura != NULL)
+				delete[] this->editura;
+			this->editura = new char[10];
+			strcpy_s(this->editura, 10, "undefined");
+		}
+
+		if (nrPag > 0)
+			this->numarPagini = nrPag;
+		else
+			this->numarPagini = 0;
+
+		if (anAparitie > 0)
+			this->anAparitie = anAparitie;
+		else
+			this->anAparitie = 0;
+		
+		this->gen_literar = gl;
+	}
+
 private:
 	char* titlu;
 	char* autor;
-	char* categorie;
+	char* editura;
 	unsigned int numarPagini;
+	unsigned int anAparitie;
 	genLiterar gen_literar;
 };
 
 class Vinyl : public Produs
 {
 public:
+	Vinyl()
+	{
+		this->numeAlbum = new char[10];
+		strcpy_s(this->numeAlbum, 10, "undefined");
+		this->artist = new char[10];
+		strcpy_s(this->artist, 10, "undefined");
+		this->numarPiese = 0;
+		this->durata = 0;
+		this->gen_muzical = genMuzical::MuzicalNedefinit;
+	}
+
 private:
 	char* numeAlbum;
 	char* artist;
@@ -358,17 +452,7 @@ private:
 
 int main()
 {
-	Produs p;
-	
-	p.setIDProdus(200);
-	p.setPret(100);
-	p.setStatusProdus(Status::Activ);
-	p.setStoc(150);
 
-	cout << p.getIDProdus();
-	cout << p.getPret();
-	cout << p.getStatusProdus();
-	cout << p.getStoc();
 	return 0;
 }
 
